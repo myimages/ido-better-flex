@@ -94,9 +94,6 @@
     (sort matches (lambda (x y) (> (cdr x) (cdr y))))))
 
 
-(defun ido-better-flex/bits (string abbreviation)
-  "Construct a float number representing the match score of given abbreviation."
-    (calc-score abbreviation string))
 
 (defun ido-better-flex/build-score (string abbreviation)
   "Calculates the fuzzy score of matching `string' with `abbreviation'.
@@ -124,7 +121,7 @@
    chars did matches in the string from the start position.
 
    "
-      (ido-better-flex/bits string abbreviation ))
+      (calc-score abbreviation string))
 
 ;;;###autoload
 (defadvice ido-set-matches-1 (around ido-better-flex-match)
