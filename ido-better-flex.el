@@ -20,7 +20,7 @@
 ;; Keywords: ido, flex, fuzzy, match, algorithm
 
 ;; Commentary:
-;;  
+;;
 ;; This package implements just another algorithm for fuzzy matching.
 ;;
 ;; To use it with as IDO's default matching algorithm, add the following
@@ -38,25 +38,26 @@
 ;; allows you to match characters even if they are not forward the
 ;; already matched portion. That is, if a char if not found by forward-search
 ;; we try to match it backwards. So for example: the 'instpkg'
-;; abbreviation will match both: 'package-install' and 'install-package' 
+;; abbreviation will match both: 'package-install' and 'install-package'
 ;; but the second will get a higher score as all
 ;; matched characters were forward-matched and we did not backtrack.
 ;;
 ;; The matching algorithm implemented in this file is not limited to
 ;; ido, you could easily use it to do fuzzy matching in other packages,
 ;; the main entry point for that purpose is the `ido-better-flex/score'
-;; function. 
+;; function.
 ;;
 
 
 
 (require 'cl)
+(require 'module-test)
 
 (defconst ido-better-flex/NO-MATCH 0.0
   "The score indicating a negative match")
 (defconst ido-better-flex/MATCH 1.0
   "The score indicating a full-match.")
-(defconst ido-better-flex/EMPTY 0.8
+(defconst ido-better-flex/EMPTY 1.0
   "The score to return when the abrreviation string is empty.")
 
 ;;;###autoload
@@ -106,34 +107,7 @@
 
 (defun ido-better-flex/bits (string abbreviation)
   "Construct a float number representing the match score of given abbreviation."
-    (let ((score 0) (fws 0) (st 0) (ls (length string)) fe index av n)
-      (catch 'failed
-        (dotimes (i (length abbreviation))
-
-          (setq av (elt abbreviation i) fe nil)
-          (setq index (ido-better-flex/position av string st ls fe))
-          
-          (unless index ;; could not find foward, try to backtrack
-            (setq fe t)
-            (setq index (ido-better-flex/position
-                         av string 0 (if (> st 0) st ls) fe)))
-           
-          (while (and index 
-                  (setq n (- (length string) index 1))
-                  (= 1 (logand 1 (lsh score (* -1 n))))
-                  (setq index (ido-better-flex/position
-                               av string
-                               (if fe 0 (+ 1 index)) (if fe index ls) fe))))
-          
-          (unless index (throw 'failed ido-better-flex/NO-MATCH))
-          
-          ;; rank first if we had a forward-match
-          (unless fe (setq fws (+ 1 fws)))
-          
-          (setq st (+ 1 index))
-          (setq score (logior score (lsh 1 n))))
-
-          (logior score (lsh fws ls)))))
+    (calc-score abbreviation string))
 
 (defun ido-better-flex/build-score (string abbreviation)
   "Calculates the fuzzy score of matching `string' with `abbreviation'.
@@ -148,7 +122,7 @@
 
       'install-package' is 7.9400
 
-   meaning that the second one will appear first on text completion. 
+   meaning that the second one will appear first on text completion.
 
    The numbers left to the decimal point are the count of how many
    characters did match on a forward search, eg, in the first example,
@@ -158,7 +132,7 @@
    as it is a better extact match.
 
    The numbers right to the decimal point are the ratio of how many
-   chars did matches in the string from the start position. 
+   chars did matches in the string from the start position.
 
    "
       (let ((bits (ido-better-flex/bits string abbreviation)))
