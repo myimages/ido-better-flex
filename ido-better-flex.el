@@ -57,8 +57,6 @@
   "The score indicating a negative match")
 (defconst ido-better-flex/MATCH 1.0
   "The score indicating a full-match.")
-(defconst ido-better-flex/EMPTY 0.0
-  "The score to return when the abrreviation string is empty.")
 
 ;;;###autoload
 (defun ido-better-flex/enable nil
