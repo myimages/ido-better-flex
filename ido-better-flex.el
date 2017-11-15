@@ -57,7 +57,7 @@
   "The score indicating a negative match")
 (defconst ido-better-flex/MATCH 1.0
   "The score indicating a full-match.")
-(defconst ido-better-flex/EMPTY 1.0
+(defconst ido-better-flex/EMPTY 0.0
   "The score to return when the abrreviation string is empty.")
 
 ;;;###autoload
@@ -78,10 +78,8 @@
 (defun ido-better-flex/score (string abbreviation)
   "Computes the score of matching string with abbreviation.
    The return value is in the range 0.0 to 1.0 the later being full-match."
-  (let ((len (length abbreviation)))
-    (cond ((= 0 len) ido-better-flex/EMPTY)
-          ((> len (length string)) ido-better-flex/NO-MATCH)
-          (t (ido-better-flex/build-score string abbreviation)))))
+
+          (ido-better-flex/build-score string abbreviation))
 
 ;;;###autoload
 (defun ido-better-flex/match (items)
@@ -96,13 +94,6 @@
                 (if (> (setq score (ido-better-flex/score name abbrev)) 0)
                     (setq matches (cons (cons item score) matches))))) items)
     (sort matches (lambda (x y) (> (cdr x) (cdr y))))))
-
-(defun ido-better-flex/position (av string start end from-end)
-  "Searchs a character `av' on `string' backwards up until index `end'"
-  (if ido-case-fold
-      (or (position (upcase av) string :start start :end end :from-end from-end)
-          (position (downcase av) string :start start :end end :from-end from-end))
-    (position av string :start start :end end :from-end from-end)))
 
 
 (defun ido-better-flex/bits (string abbreviation)
@@ -135,8 +126,7 @@
    chars did matches in the string from the start position.
 
    "
-      (let ((bits (ido-better-flex/bits string abbreviation)))
-        (/ (* bits ido-better-flex/MATCH) (- (expt 2 (length string)) 1))))
+      (ido-better-flex/bits string abbreviation ))
 
 ;;;###autoload
 (defadvice ido-set-matches-1 (around ido-better-flex-match)
