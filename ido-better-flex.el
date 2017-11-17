@@ -91,7 +91,7 @@
               (let ((name (ido-name item)) score)
                 (if (> (setq score (ido-better-flex/score name abbrev)) 0)
                     (setq matches (cons (cons item score) matches))))) items)
-    (sort matches (lambda (x y) (> (cdr x) (cdr y))))))
+    (stable-sort matches (lambda (x y) (> (cdr x) (cdr y))))))
 
 
 
