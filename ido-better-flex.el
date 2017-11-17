@@ -57,8 +57,6 @@
   "The score indicating a negative match")
 (defconst ido-better-flex/MATCH 1.0
   "The score indicating a full-match.")
-(defconst ido-better-flex/EMPTY 0.0
-  "The score to return when the abrreviation string is empty.")
 
 ;;;###autoload
 (defun ido-better-flex/enable nil
@@ -79,7 +77,7 @@
   "Computes the score of matching string with abbreviation.
    The return value is in the range 0.0 to 1.0 the later being full-match."
 
-          (ido-better-flex/build-score string abbreviation))
+          (perfect-score abbreviation string))
 
 ;;;###autoload
 (defun ido-better-flex/match (items)
@@ -96,37 +94,6 @@
     (sort matches (lambda (x y) (> (cdr x) (cdr y))))))
 
 
-(defun ido-better-flex/bits (string abbreviation)
-  "Construct a float number representing the match score of given abbreviation."
-    (calc-score abbreviation string))
-
-(defun ido-better-flex/build-score (string abbreviation)
-  "Calculates the fuzzy score of matching `string' with `abbreviation'.
-   The score is a float number calculated based on the number characters
-   from `abbreviation' that match `string' and how immediate they are to each other.
-
-   For example, for an `abbreviation' of 'instpkg', the score of
-
-      'package-install' is 6.5819
-
-   and for
-
-      'install-package' is 7.9400
-
-   meaning that the second one will appear first on text completion.
-
-   The numbers left to the decimal point are the count of how many
-   characters did match on a forward search, eg, in the first example,
-   'instpkg' matches 'inst' from chars 8 then has to backtrack for p but
-   'kg' are forward-found again, so the number of forward-matched chars is 6.
-   This means that abbreviations having not to backtrack are high scored
-   as it is a better extact match.
-
-   The numbers right to the decimal point are the ratio of how many
-   chars did matches in the string from the start position.
-
-   "
-      (ido-better-flex/bits string abbreviation ))
 
 ;;;###autoload
 (defadvice ido-set-matches-1 (around ido-better-flex-match)
