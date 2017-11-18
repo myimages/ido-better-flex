@@ -77,7 +77,7 @@
   "Computes the score of matching string with abbreviation.
    The return value is in the range 0.0 to 1.0 the later being full-match."
 
-          (perfect-score abbreviation string))
+          (calc-score abbreviation string))
 
 ;;;###autoload
 (defun ido-better-flex/match (items)
