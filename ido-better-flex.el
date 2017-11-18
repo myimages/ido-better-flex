@@ -51,7 +51,7 @@
 
 
 (require 'cl)
-(require 'git-find-file)
+(require 'module-test)
 
 (defconst ido-better-flex/NO-MATCH 0.0
   "The score indicating a negative match")
@@ -77,7 +77,7 @@
   "Computes the score of matching string with abbreviation.
    The return value is in the range 0.0 to 1.0 the later being full-match."
 
-          (gff-score-fuzzily abbreviation string))
+          (perfect-score abbreviation string))
 
 ;;;###autoload
 (defun ido-better-flex/match (items)
